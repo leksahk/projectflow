@@ -3,7 +3,6 @@ const cors = require('cors');
 const admin = require('firebase-admin');
 const path = require('path');
 
-// Ключ беремо зі змінної середовища (на хостингу) або з локального файлу (на комп'ютері)
 const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
   ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
   : require('./serviceAccountKey.json');
@@ -17,7 +16,6 @@ app.use(express.json());
 const PROJECT_STATUSES = ['planning', 'active', 'done'];
 const TASK_STATUSES = ['todo', 'doing', 'done'];
 
-// Перевірка Firebase-токена: без нього API недоступне
 async function auth(req, res, next) {
   try {
     const token = (req.headers.authorization || '').replace('Bearer ', '');
@@ -29,7 +27,6 @@ async function auth(req, res, next) {
   }
 }
 
-// Валідація тіла запиту
 function clean(body, statuses) {
   const title = String(body.title || '').trim();
   if (!title || title.length > 100) return { error: 'Назва обовʼязкова (до 100 символів)' };
@@ -40,7 +37,6 @@ function clean(body, statuses) {
   return { data: { title, status, deadline, description: String(body.description || '').slice(0, 500) } };
 }
 
-// Підрахунок задач за статусами для кожного проєкту
 async function loadWithCounts(uid) {
   const [ps, ts] = await Promise.all([
     db.collection('projects').where('ownerId', '==', uid).get(),
@@ -96,7 +92,6 @@ app.delete('/api/projects/:id', auth, async (req, res) => {
   res.status(204).end();
 });
 
-// Статистика для дашборду
 app.get('/api/stats', auth, async (req, res) => {
   try {
     const { projects, tasks } = await loadWithCounts(req.user.uid);
@@ -114,7 +109,6 @@ app.get('/api/stats', auth, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// Проєкт зі своїми задачами
 async function ownedProject(uid, id) {
   const doc = await db.collection('projects').doc(id).get();
   return doc.exists && doc.data().ownerId === uid ? doc : null;
@@ -156,8 +150,7 @@ app.delete('/api/tasks/:id', auth, async (req, res) => {
   res.status(204).end();
 });
 
-// Учасники команди проєкту
-const ROLES = ['manager', 'developer', 'designer', 'tester'];
+const ROLES = ['manager', 'developer', 'designer', 'tester', 'other'];
 
 app.get('/api/members', auth, async (req, res) => {
   let q = db.collection('members').where('ownerId', '==', req.user.uid);
@@ -173,10 +166,31 @@ app.post('/api/members', auth, async (req, res) => {
   if (!name || name.length > 60) return res.status(400).json({ error: 'Імʼя обовʼязкове (до 60 символів)' });
   if (email && !/^\S+@\S+\.\S+$/.test(email)) return res.status(400).json({ error: 'Некоректний email' });
   if (!ROLES.includes(role)) return res.status(400).json({ error: 'Недопустима роль' });
+  const customRole = role === 'other' ? String(req.body.customRole || '').trim() : '';
+  if (role === 'other' && (!customRole || customRole.length > 40)) return res.status(400).json({ error: 'Вкажіть свою роль (до 40 символів)' });
   if (!(await ownedProject(req.user.uid, String(projectId || '')))) return res.status(404).json({ error: 'Проєкт не знайдено' });
-  const data = { name, email, role, projectId, ownerId: req.user.uid };
+  const data = { name, email, role, customRole, projectId, ownerId: req.user.uid };
   const ref = await db.collection('members').add(data);
   res.status(201).json({ id: ref.id, ...data });
+});
+
+app.put('/api/members/:id', auth, async (req, res) => {
+  const ref = db.collection('members').doc(req.params.id);
+  const doc = await ref.get();
+  if (!doc.exists || doc.data().ownerId !== req.user.uid) return res.status(404).json({ error: 'Учасника не знайдено' });
+  const name = String(req.body.name || '').trim();
+  const email = String(req.body.email || '').trim();
+  const role = req.body.role;
+  const projectId = req.body.projectId || doc.data().projectId;
+  if (!name || name.length > 60) return res.status(400).json({ error: 'Імʼя обовʼязкове (до 60 символів)' });
+  if (email && !/^\S+@\S+\.\S+$/.test(email)) return res.status(400).json({ error: 'Некоректний email' });
+  if (!ROLES.includes(role)) return res.status(400).json({ error: 'Недопустима роль' });
+  const customRole = role === 'other' ? String(req.body.customRole || '').trim() : '';
+  if (role === 'other' && (!customRole || customRole.length > 40)) return res.status(400).json({ error: 'Вкажіть свою роль (до 40 символів)' });
+  if (!(await ownedProject(req.user.uid, String(projectId)))) return res.status(404).json({ error: 'Проєкт не знайдено' });
+  const data = { name, email, role, customRole, projectId };
+  await ref.update(data);
+  res.json({ id: ref.id, ...data });
 });
 
 app.delete('/api/members/:id', auth, async (req, res) => {

@@ -19,7 +19,7 @@ export default function Team() {
 
   const save = (e) => {
     e.preventDefault();
-    api.post('/members', form).then(() => { setForm(null); load(); }).catch((er) => setError(er.message));
+    (form.id ? api.put('/members/' + form.id, form) : api.post('/members', form)).then(() => { setForm(null); load(); }).catch((er) => setError(er.message));
   };
   const remove = (m) => api.del('/members/' + m.id).then(load).catch((er) => setError(er.message));
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -45,12 +45,15 @@ export default function Team() {
             <strong>{m.name}</strong>
             <span className="badge">{ROLES[m.role]}</span>
             <span className="muted">{titleOf(m.projectId)}{m.email ? ' · ' + m.email : ''}</span>
-            <button className="btn-link task-del" onClick={() => remove(m)}>Видалити</button>
+            <span className="foot-actions">
+              <button className="btn-link" onClick={() => setForm(m)}>Редагувати</button>
+              <button className="btn-link task-del" onClick={() => remove(m)}>Видалити</button>
+            </span>
           </div>
         ))}
       </div>
       {form && (
-        <Modal title="Новий учасник" onClose={() => setForm(null)}>
+        <Modal title={form.id ? 'Редагувати учасника' : 'Новий учасник'} onClose={() => setForm(null)}>
           <form className="form" onSubmit={save}>
             <label>Імʼя<input value={form.name} onChange={set('name')} required maxLength={60} /></label>
             <label>Email<input type="email" value={form.email} onChange={set('email')} /></label>
@@ -58,7 +61,7 @@ export default function Team() {
             <label>Проєкт<select value={form.projectId} onChange={set('projectId')}>{projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}</select></label>
             <div className="actions">
               <button type="button" className="btn-ghost" onClick={() => setForm(null)}>Скасувати</button>
-              <button className="btn" type="submit">Додати учасника</button>
+              <button className="btn" type="submit">{form.id ? 'Зберегти зміни' : 'Додати учасника'}</button>
             </div>
           </form>
         </Modal>

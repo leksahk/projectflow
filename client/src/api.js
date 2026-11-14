@@ -19,5 +19,5 @@ export const api = {
   del: (p) => call(p, 'DELETE'),
 };
 
-export const ROLES = { manager: 'Менеджер', developer: 'Розробник', designer: 'Дизайнер', tester: 'Тестувальник' };
+export const ROLES = { manager: 'Менеджер', developer: 'Розробник', designer: 'Дизайнер', tester: 'Тестувальник', other: 'Інший' };
 export const STATUS = { planning: 'Планування', active: 'У роботі', done: 'Завершено' };
