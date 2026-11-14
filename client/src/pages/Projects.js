@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, STATUS } from '../api';
 import ProjectCard from '../components/ProjectCard';
 import Modal from '../components/Modal';
+import ProjectForm from '../components/ProjectForm';
 
 const EMPTY = { title: '', description: '', status: 'planning', deadline: '' };
 
@@ -26,16 +27,17 @@ export default function Projects() {
       return 0; // server already returns newest first
     });
 
-  const save = async (e) => {
-    e.preventDefault();
-    try { await api.post('/projects', form); setForm(null); load(); }
-    catch (err) { setError(err.message); }
+  const save = async (values) => {
+    try {
+      if (values.id) await api.put('/projects/' + values.id, values);
+      else await api.post('/projects', values);
+      setForm(null); load();
+    } catch (err) { setError(err.message); }
   };
   const remove = async () => {
     try { await api.del('/projects/' + toDelete.id); setToDelete(null); load(); }
     catch (err) { setError(err.message); }
   };
-  const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   return (
     <>
@@ -58,25 +60,12 @@ export default function Projects() {
       {error && <p className="error">{error}</p>}
       {visible.length === 0 && <p className="muted">Проєктів не знайдено. Створіть перший кнопкою «Новий проєкт».</p>}
       <div className="grid">
-        {visible.map((p) => <ProjectCard key={p.id} project={p} onDelete={setToDelete} />)}
+        {visible.map((p) => <ProjectCard key={p.id} project={p} onDelete={setToDelete} onEdit={setForm} />)}
       </div>
 
       {form && (
-        <Modal title="Новий проєкт" onClose={() => setForm(null)}>
-          <form onSubmit={save} className="form">
-            <label>Назва<input value={form.title} onChange={set('title')} required maxLength={100} /></label>
-            <label>Опис<textarea value={form.description} onChange={set('description')} rows={3} /></label>
-            <label>Статус
-              <select value={form.status} onChange={set('status')}>
-                {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-              </select>
-            </label>
-            <label>Дедлайн<input type="date" value={form.deadline} onChange={set('deadline')} /></label>
-            <div className="actions">
-              <button type="button" className="btn-ghost" onClick={() => setForm(null)}>Скасувати</button>
-              <button className="btn" type="submit">Створити проєкт</button>
-            </div>
-          </form>
+        <Modal title={form.id ? 'Редагувати проєкт' : 'Новий проєкт'} onClose={() => setForm(null)}>
+          <ProjectForm initial={form} onSubmit={save} onCancel={() => setForm(null)} />
         </Modal>
       )}
       {toDelete && (

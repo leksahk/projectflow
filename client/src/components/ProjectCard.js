@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import StatusBadge from './StatusBadge';
 import ProgressBar from './ProgressBar';
 
-export default function ProjectCard({ project, onDelete }) {
+export default function ProjectCard({ project, onDelete, onEdit }) {
   const { title, description, status, deadline, counts } = project;
   const overdue = deadline && status !== 'done' && new Date(deadline) < new Date();
   return (
@@ -17,7 +17,10 @@ export default function ProjectCard({ project, onDelete }) {
         <span className={overdue ? 'due overdue' : 'due'}>
           {deadline ? `Дедлайн: ${deadline}` : 'Без дедлайну'}
         </span>
-        <button className="btn-link" onClick={() => onDelete(project)}>Видалити</button>
+        <span className="foot-actions">
+          <button className="btn-link" onClick={() => onEdit(project)}>Редагувати</button>
+          <button className="btn-link" onClick={() => onDelete(project)}>Видалити</button>
+        </span>
       </div>
     </article>
   );

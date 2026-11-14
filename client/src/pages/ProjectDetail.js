@@ -5,6 +5,8 @@ import StatusBadge from '../components/StatusBadge';
 import ProgressBar from '../components/ProgressBar';
 import TaskCard from '../components/TaskCard';
 import Modal from '../components/Modal';
+import ProjectForm from '../components/ProjectForm';
+import TaskForm from '../components/TaskForm';
 
 const COLUMNS = [['todo', 'До виконання'], ['doing', 'У роботі'], ['done', 'Готово']];
 const ORDER = COLUMNS.map((c) => c[0]);
@@ -16,6 +18,7 @@ export default function ProjectDetail() {
   const [tasks, setTasks] = useState([]);
   const [form, setForm] = useState(null);
   const [members, setMembers] = useState([]);
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState('');
 
   const load = useCallback(() => api.get('/projects/' + id)
@@ -26,7 +29,8 @@ export default function ProjectDetail() {
   useEffect(() => { api.get('/members?projectId=' + id).then(setMembers).catch(() => {}); }, [id]);
 
   const run = (fn) => fn().then(load).catch((e) => setError(e.message));
-  const addTask = (e) => { e.preventDefault(); run(() => api.post(`/projects/${id}/tasks`, form)).then(() => setForm(null)); };
+  const saveTask = (v) => run(() => (v.id ? api.put('/tasks/' + v.id, v) : api.post(`/projects/${id}/tasks`, v))).then(() => setForm(null));
+  const saveProject = (v) => run(() => api.put('/projects/' + id, v)).then(() => setEditing(false));
   const moveTask = (t, dir) => run(() => api.put('/tasks/' + t.id, { status: ORDER[ORDER.indexOf(t.status) + dir] }));
   const removeTask = (t) => run(() => api.del('/tasks/' + t.id));
   const changeStatus = (e) => run(() => api.put('/projects/' + id, { ...project, status: e.target.value }));
@@ -42,9 +46,12 @@ export default function ProjectDetail() {
       <Link to="/projects" className="back">← До проєктів</Link>
       <div className="page-head">
         <h1>{project.title}</h1>
-        <select className="status-select" value={project.status} onChange={changeStatus} aria-label="Статус проєкту">
+        <div className="head-actions">
+          <button className="btn-ghost" onClick={() => setEditing(true)}>Редагувати проєкт</button>
+          <select className="status-select" value={project.status} onChange={changeStatus} aria-label="Статус проєкту">
           {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
+        </div>
       </div>
       {project.description && <p className="muted">{project.description}</p>}
       <div className="detail-bar">
@@ -69,24 +76,20 @@ export default function ProjectDetail() {
               }}>
               <h3>{label} <span className="count">{list.length}</span></h3>
               {list.length === 0 && <p className="muted small">Порожньо</p>}
-              {list.map((t) => <TaskCard key={t.id} task={t} onMove={moveTask} onDelete={removeTask} />)}
+              {list.map((t) => <TaskCard key={t.id} task={t} onMove={moveTask} onDelete={removeTask} onEdit={setForm} />)}
             </section>
           );
         })}
       </div>
 
       {form && (
-        <Modal title="Нова задача" onClose={() => setForm(null)}>
-          <form className="form" onSubmit={addTask}>
-            <label>Назва<input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required maxLength={100} /></label>
-            <label>Виконавець<input value={form.assignee} onChange={(e) => setForm({ ...form, assignee: e.target.value })} placeholder="Оберіть із команди або введіть" list="team-list" />
-              <datalist id="team-list">{members.map((m) => <option key={m.id} value={m.name} />)}</datalist></label>
-            <label>Термін<input type="date" value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} /></label>
-            <div className="actions">
-              <button type="button" className="btn-ghost" onClick={() => setForm(null)}>Скасувати</button>
-              <button className="btn" type="submit">Додати задачу</button>
-            </div>
-          </form>
+        <Modal title={form.id ? 'Редагувати задачу' : 'Нова задача'} onClose={() => setForm(null)}>
+          <TaskForm initial={form} members={members} onSubmit={saveTask} onCancel={() => setForm(null)} />
+        </Modal>
+      )}
+      {editing && (
+        <Modal title="Редагувати проєкт" onClose={() => setEditing(false)}>
+          <ProjectForm initial={project} onSubmit={saveProject} onCancel={() => setEditing(false)} />
         </Modal>
       )}
     </>

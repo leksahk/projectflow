@@ -73,3 +73,4 @@ label{display:flex;flex-direction:column;gap:6px;font-size:.9rem;font-weight:500
 .profile{max-width:460px;gap:10px;align-items:flex-start}.avatar{width:56px;height:56px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:1.4rem!important}
 .task{cursor:grab}.column:has(.task:active){outline:2px dashed var(--brand)}
 .btn:disabled{opacity:.5;cursor:default}
+.foot-actions,.head-actions{display:flex;gap:14px;align-items:center}
