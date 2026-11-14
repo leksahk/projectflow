@@ -201,6 +201,45 @@ app.delete('/api/members/:id', auth, async (req, res) => {
   res.status(204).end();
 });
 
+// Аналітика: індекс ризику проєктів і навантаження учасників
+// R = 100 * (w1*O + w2*U + w3*T), де O - частка прострочених задач, U - частка незавершених,
+// T - часовий тиск (1, якщо дедлайн минув; інакше 1 - днів_до_дедлайну/30, не менше 0)
+const W = { overdue: 0.4, unfinished: 0.3, time: 0.3 };
+
+app.get('/api/analytics', auth, async (req, res) => {
+  try {
+    const { projects, tasks } = await loadWithCounts(req.user.uid);
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);
+    const rows = projects.map((p) => {
+      const own = tasks.filter((t) => t.projectId === p.id);
+      const total = own.length;
+      const unfinished = own.filter((t) => t.status !== 'done').length;
+      const overdue = own.filter((t) => t.status !== 'done' && t.deadline && t.deadline < today).length;
+      let daysLeft = null;
+      let T = 0;
+      if (p.deadline) {
+        daysLeft = Math.ceil((new Date(p.deadline) - now) / 86400000);
+        T = daysLeft < 0 ? 1 : Math.max(0, 1 - daysLeft / 30);
+      }
+      const O = total ? overdue / total : 0;
+      const U = total ? unfinished / total : 0;
+      const risk = p.status === 'done' ? 0 : Math.round(100 * (W.overdue * O + W.unfinished * U + W.time * T));
+      const level = risk >= 60 ? 'high' : risk >= 30 ? 'medium' : 'low';
+      return { id: p.id, title: p.title, status: p.status, deadline: p.deadline, counts: p.counts, total, overdue, daysLeft, risk, level };
+    }).sort((a, b) => b.risk - a.risk);
+
+    const load = {};
+    tasks.forEach((t) => {
+      const name = (t.assignee || '').trim() || 'Без виконавця';
+      const x = (load[name] = load[name] || { name, open: 0, overdue: 0, done: 0 });
+      if (t.status === 'done') x.done++;
+      else { x.open++; if (t.deadline && t.deadline < today) x.overdue++; }
+    });
+    res.json({ weights: W, projects: rows, workload: Object.values(load).sort((a, b) => b.open - a.open) });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 const buildPath = path.join(__dirname, '..', 'client', 'build');
 app.use(express.static(buildPath));
 app.use((req, res) => res.sendFile(path.join(buildPath, 'index.html')));

@@ -8,6 +8,7 @@ import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import Team from './pages/Team';
 import Profile from './pages/Profile';
+import Analytics from './pages/Analytics';
 import './styles.css';
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
             <NavLink to="/" end>Дашборд</NavLink>
             <NavLink to="/projects">Проєкти</NavLink>
             <NavLink to="/team">Команда</NavLink>
+            <NavLink to="/analytics">Аналітика</NavLink>
             <NavLink to="/profile">Профіль</NavLink>
           </nav>
           <div className="side-user">
@@ -39,6 +41,7 @@ export default function App() {
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:id" element={<ProjectDetail />} />
             <Route path="/team" element={<Team />} />
+            <Route path="/analytics" element={<Analytics />} />
             <Route path="/profile" element={<Profile user={user} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

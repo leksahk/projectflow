@@ -74,3 +74,10 @@ label{display:flex;flex-direction:column;gap:6px;font-size:.9rem;font-weight:500
 .task{cursor:grab}.column:has(.task:active){outline:2px dashed var(--brand)}
 .btn:disabled{opacity:.5;cursor:default}
 .foot-actions,.head-actions{display:flex;gap:14px;align-items:center}
+.risk-row{grid-template-columns:1.4fr auto auto 1.4fr}.load-row{grid-template-columns:1.2fr 2fr auto auto auto}
+.badge.risk-low{background:#d9f5ec;color:#0b6b52}.badge.risk-medium{background:#fff3d6;color:#8a5a00}.badge.risk-high{background:#fde2e6;color:#a3152c}
+.load-bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}.load-bar i{display:block;height:100%;background:var(--brand)}
+.report{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px}
+.table{width:100%;border-collapse:collapse;font-size:.92rem}.table th,.table td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+@media(max-width:760px){.risk-row,.load-row{grid-template-columns:1fr}}
+@media print{.side,.no-print{display:none!important}.shell{display:block}.main{padding:0;max-width:none}body{background:#fff;color:#000}.report{border:0}}
