@@ -20,7 +20,7 @@ export default function Dashboard() {
       <h1>Дашборд</h1>
       <div className="tiles">
         {tiles.map(([label, value]) => (
-          <div key={label} className={'tile' + (label === 'Прострочено' && value > 0 ? ' tile-alert' : '')}>
+          <div key={label} className={'tile' + (label === 'Протерміновано' && value > 0 ? ' tile-alert' : '')}>
             <b>{value}</b><span>{label}</span>
           </div>
         ))}
