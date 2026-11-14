@@ -35,7 +35,7 @@ export default function ProjectDetail() {
   const removeTask = (t) => run(() => api.del('/tasks/' + t.id));
   const changeStatus = (e) => run(() => api.put('/projects/' + id, { ...project, status: e.target.value }));
 
-  if (error) return <><Link to="/projects">← До проєктів</Link><p className="error">{error}</p></>;
+  if (error) return <><Link to="/projects">← До проєктів</Link><p className="alert alert-danger py-2 mb-0">{error}</p></>;
   if (!project) return <p className="muted">Завантаження…</p>;
 
   const counts = { todo: 0, doing: 0, done: 0 };
@@ -47,8 +47,8 @@ export default function ProjectDetail() {
       <div className="page-head">
         <h1>{project.title}</h1>
         <div className="head-actions">
-          <button className="btn-ghost" onClick={() => setEditing(true)}>Редагувати проєкт</button>
-          <select className="status-select" value={project.status} onChange={changeStatus} aria-label="Статус проєкту">
+          <button className="btn btn-outline-secondary" onClick={() => setEditing(true)}>Редагувати проєкт</button>
+          <select className="form-select status-select" value={project.status} onChange={changeStatus} aria-label="Статус проєкту">
           {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
         </div>
@@ -62,7 +62,7 @@ export default function ProjectDetail() {
 
       <div className="page-head">
         <h2>Задачі</h2>
-        <button className="btn" onClick={() => setForm(EMPTY)}>Нова задача</button>
+        <button className="btn btn-primary" onClick={() => setForm(EMPTY)}>Нова задача</button>
       </div>
       <div className="board">
         {COLUMNS.map(([key, label]) => {

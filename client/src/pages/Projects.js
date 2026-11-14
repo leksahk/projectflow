@@ -43,24 +43,28 @@ export default function Projects() {
     <>
       <div className="page-head">
         <h1>Проєкти</h1>
-        <button className="btn" onClick={() => setForm(EMPTY)}>Новий проєкт</button>
+        <button className="btn btn-primary" onClick={() => setForm(EMPTY)}>Новий проєкт</button>
       </div>
       <div className="toolbar">
-        <input placeholder="Пошук за назвою" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <input className="form-control" placeholder="Пошук за назвою" value={q} onChange={(e) => setQ(e.target.value)} />
+        <select className="form-select" value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="all">Усі статуси</option>
           {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
-        <select value={sort} onChange={(e) => setSort(e.target.value)}>
+        <select className="form-select" value={sort} onChange={(e) => setSort(e.target.value)}>
           <option value="new">Спочатку нові</option>
           <option value="deadline">За дедлайном</option>
           <option value="name">За назвою</option>
         </select>
       </div>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="alert alert-danger py-2 mb-0">{error}</p>}
       {visible.length === 0 && <p className="muted">Проєктів не знайдено. Створіть перший кнопкою «Новий проєкт».</p>}
-      <div className="grid">
-        {visible.map((p) => <ProjectCard key={p.id} project={p} onDelete={setToDelete} onEdit={setForm} />)}
+      <div className="item row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+        {visible.map((p) => (
+          <div className="col" key={p.id}>
+            <ProjectCard project={p} onDelete={setToDelete} onEdit={setForm} />
+          </div>
+        ))}
       </div>
 
       {form && (
@@ -72,7 +76,7 @@ export default function Projects() {
         <Modal title="Видалити проєкт?" onClose={() => setToDelete(null)}>
           <p>«{toDelete.title}» і всі його задачі буде видалено назавжди.</p>
           <div className="actions">
-            <button className="btn-ghost" onClick={() => setToDelete(null)}>Скасувати</button>
+            <button className="btn btn-outline-secondary" onClick={() => setToDelete(null)}>Скасувати</button>
             <button className="btn btn-danger" onClick={remove}>Видалити проєкт</button>
           </div>
         </Modal>

@@ -16,9 +16,9 @@ export default function Profile({ user }) {
         <b className="avatar">{(user.email || '?')[0].toUpperCase()}</b>
         <strong>{user.email}</strong>
         <span className="muted">Зареєстровано: {since}</span>
-        {s && <><span className="muted">Проєктів: {s.projects}, протермінованих: {s.overdue}</span>
+        {s && <><span className="muted">Проєктів: {s.projects}, простермінованих: {s.overdue}</span>
         <ProgressBar todo={s.tasks.todo} doing={s.tasks.doing} done={s.tasks.done} /></>}
-        <button className="btn btn-ghost" onClick={() => signOut(auth)}>Вийти з акаунта</button>
+        <button className="btn btn-outline-secondary" onClick={() => signOut(auth)}>Вийти з акаунта</button>
       </div>
     </>
   );

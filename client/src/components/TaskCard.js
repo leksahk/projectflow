@@ -9,10 +9,10 @@ export default function TaskCard({ task, onMove, onDelete, onEdit }) {
         {deadline && <span className={overdue ? 'due overdue' : 'due'}>до {deadline}</span>}
       </div>
       <div className="task-actions">
-        <button className="btn-link" aria-label="Перенести назад" disabled={status === 'todo'} onClick={() => onMove(task, -1)}>←</button>
-        <button className="btn-link" aria-label="Перенести далі" disabled={status === 'done'} onClick={() => onMove(task, 1)}>→</button>
-        <button className="btn-link" onClick={() => onEdit(task)}>Змінити</button>
-        <button className="btn-link task-del" onClick={() => onDelete(task)}>Видалити</button>
+        <button className="btn btn-link btn-sm p-0" aria-label="Перенести назад" disabled={status === 'todo'} onClick={() => onMove(task, -1)}>←</button>
+        <button className="btn btn-link btn-sm p-0" aria-label="Перенести далі" disabled={status === 'done'} onClick={() => onMove(task, 1)}>→</button>
+        <button className="btn btn-link btn-sm p-0" onClick={() => onEdit(task)}>Змінити</button>
+        <button className="btn btn-link btn-sm p-0 task-del" onClick={() => onDelete(task)}>Видалити</button>
       </div>
     </div>
   );

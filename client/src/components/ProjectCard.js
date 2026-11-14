@@ -6,7 +6,7 @@ export default function ProjectCard({ project, onDelete, onEdit }) {
   const { title, description, status, deadline, counts } = project;
   const overdue = deadline && status !== 'done' && new Date(deadline) < new Date();
   return (
-    <article className={`project project-${status}`}>
+    <article className={`project project-${status} h-100`}>
       <div className="project-top">
         <h3><Link to={`/projects/${project.id}`}>{title}</Link></h3>
         <StatusBadge status={status} />
@@ -18,8 +18,8 @@ export default function ProjectCard({ project, onDelete, onEdit }) {
           {deadline ? `Дедлайн: ${deadline}` : 'Без дедлайну'}
         </span>
         <span className="foot-actions">
-          <button className="btn-link" onClick={() => onEdit(project)}>Редагувати</button>
-          <button className="btn-link" onClick={() => onDelete(project)}>Видалити</button>
+          <button className="btn btn-link btn-sm p-0" onClick={() => onEdit(project)}>Редагувати</button>
+          <button className="btn btn-link btn-sm p-0" onClick={() => onDelete(project)}>Видалити</button>
         </span>
       </div>
     </article>

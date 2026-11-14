@@ -28,26 +28,26 @@ export default function Team() {
     <>
       <div className="page-head">
         <h1>Команда</h1>
-        <button className="btn" disabled={projects.length === 0} onClick={() => setForm({ name: '', email: '', role: 'developer', projectId: projects[0].id })}>Додати учасника</button>
+        <button className="btn btn-primary" disabled={projects.length === 0} onClick={() => setForm({ name: '', email: '', role: 'developer', projectId: projects[0].id })}>Додати учасника</button>
       </div>
       {projects.length === 0 && <p className="muted">Спочатку створіть проєкт у розділі «Проєкти».</p>}
       <div className="toolbar">
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+        <select className="form-select" value={filter} onChange={(e) => setFilter(e.target.value)}>
           <option value="all">Усі проєкти</option>
           {projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
         </select>
         {byRole.map(([r, n]) => <span key={r} className="badge">{ROLES[r]}: {n}</span>)}
       </div>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="alert alert-danger py-2 mb-0">{error}</p>}
       <div className="rows">
         {visible.map((m) => (
-          <div className="row member" key={m.id}>
+          <div className="item member" key={m.id}>
             <strong>{m.name}</strong>
-            <span className="badge">{ROLES[m.role]}</span>
+            <span className="badge">{m.role === 'other' ? m.customRole : ROLES[m.role]}</span>
             <span className="muted">{titleOf(m.projectId)}{m.email ? ' · ' + m.email : ''}</span>
             <span className="foot-actions">
-              <button className="btn-link" onClick={() => setForm(m)}>Редагувати</button>
-              <button className="btn-link task-del" onClick={() => remove(m)}>Видалити</button>
+              <button className="btn btn-link btn-sm p-0" onClick={() => setForm(m)}>Редагувати</button>
+              <button className="btn btn-link btn-sm p-0 task-del" onClick={() => remove(m)}>Видалити</button>
             </span>
           </div>
         ))}
@@ -55,13 +55,16 @@ export default function Team() {
       {form && (
         <Modal title={form.id ? 'Редагувати учасника' : 'Новий учасник'} onClose={() => setForm(null)}>
           <form className="form" onSubmit={save}>
-            <label>Імʼя<input value={form.name} onChange={set('name')} required maxLength={60} /></label>
-            <label>Email<input type="email" value={form.email} onChange={set('email')} /></label>
-            <label>Роль<select value={form.role} onChange={set('role')}>{Object.entries(ROLES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
-            <label>Проєкт<select value={form.projectId} onChange={set('projectId')}>{projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}</select></label>
+            <label>Імʼя<input className="form-control" value={form.name} onChange={set('name')} required maxLength={60} /></label>
+            <label>Email<input className="form-control" type="email" value={form.email} onChange={set('email')} /></label>
+            <label>Роль<select className="form-select" value={form.role} onChange={set('role')}>{Object.entries(ROLES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
+            {form.role === 'other' && (
+              <label>Своя роль<input className="form-control" value={form.customRole || ''} onChange={set('customRole')} placeholder="Наприклад: Аналітик" required maxLength={40} /></label>
+            )}
+            <label>Проєкт<select className="form-select" value={form.projectId} onChange={set('projectId')}>{projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}</select></label>
             <div className="actions">
-              <button type="button" className="btn-ghost" onClick={() => setForm(null)}>Скасувати</button>
-              <button className="btn" type="submit">{form.id ? 'Зберегти зміни' : 'Додати учасника'}</button>
+              <button type="button" className="btn btn-outline-secondary" onClick={() => setForm(null)}>Скасувати</button>
+              <button className="btn btn-primary" type="submit">{form.id ? 'Зберегти зміни' : 'Додати учасника'}</button>
             </div>
           </form>
         </Modal>

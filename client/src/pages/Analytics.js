@@ -31,7 +31,7 @@ export default function Analytics() {
     if (sel) api.get('/projects/' + sel).then(setReport).catch((e) => setError(e.message));
   }, [sel]);
 
-  if (error) return <p className="error">{error}</p>;
+  if (error) return <p className="alert alert-danger py-2 mb-0">{error}</p>;
   if (!data) return <p className="muted">Завантаження…</p>;
   const maxOpen = Math.max(1, ...data.workload.map((w) => w.open));
   const w = data.weights;
@@ -42,19 +42,19 @@ export default function Analytics() {
 
       <h2>Індекс ризику проєктів</h2>
       <p className="muted small">
-        R = 100 · ({w.overdue}·O + {w.unfinished}·U + {w.time}·T), де O — частка протермінованих задач, U — частка
+        R = 100 · ({w.overdue}·O + {w.unfinished}·U + {w.time}·T), де O — частка простермінованих задач, U — частка
         незавершених, T — часовий тиск дедлайну. До 30 — низький ризик, від 60 — високий.
       </p>
       {data.projects.length === 0 && <p className="muted">Створіть проєкт, щоб побачити аналітику.</p>}
       <div className="rows">
         {data.projects.map((p) => (
-          <div className="row risk-row" key={p.id}>
+          <div className="item risk-row" key={p.id}>
             <strong>{p.title}</strong>
             <StatusBadge status={p.status} />
             <span className={`badge risk-${p.level}`}>Ризик {p.risk}: {LEVEL[p.level]}</span>
             <span className="due">
               {p.deadline ? (p.daysLeft < 0 ? `минуло ${-p.daysLeft} дн.` : `${p.daysLeft} дн. до дедлайну`) : 'без дедлайну'}
-              {p.overdue > 0 && ` · протерміновано задач: ${p.overdue}`}
+              {p.overdue > 0 && ` · простерміновано задач: ${p.overdue}`}
             </span>
           </div>
         ))}
@@ -63,11 +63,11 @@ export default function Analytics() {
       <h2>Навантаження на виконавців</h2>
       <div className="rows">
         {data.workload.map((x) => (
-          <div className="row load-row" key={x.name}>
+          <div className="item load-row" key={x.name}>
             <strong>{x.name}</strong>
             <div className="load-bar"><i style={{ width: (x.open / maxOpen) * 100 + '%' }} /></div>
             <span>відкрито: <b>{x.open}</b></span>
-            <span className={x.overdue ? 'overdue' : 'due'}>протерміновано: {x.overdue}</span>
+            <span className={x.overdue ? 'overdue' : 'due'}>простерміновано: {x.overdue}</span>
             <span className="due">виконано: {x.done}</span>
           </div>
         ))}
@@ -76,11 +76,11 @@ export default function Analytics() {
       <div className="page-head no-print">
         <h2>Звіт по проєкту</h2>
         <div className="head-actions">
-          <select value={sel} onChange={(e) => setSel(e.target.value)} aria-label="Проєкт для звіту">
+          <select className="form-select" value={sel} onChange={(e) => setSel(e.target.value)} aria-label="Проєкт для звіту">
             {data.projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
           </select>
-          <button className="btn-ghost" onClick={() => window.print()} disabled={!report}>Друкувати</button>
-          <button className="btn" onClick={() => exportCsv(report.project, report.tasks)} disabled={!report}>Завантажити CSV</button>
+          <button className="btn btn-outline-secondary" onClick={() => window.print()} disabled={!report}>Друкувати</button>
+          <button className="btn btn-primary" onClick={() => exportCsv(report.project, report.tasks)} disabled={!report}>Завантажити CSV</button>
         </div>
       </div>
       {report && (
@@ -94,7 +94,7 @@ export default function Analytics() {
             doing={report.tasks.filter((t) => t.status === 'doing').length}
             done={report.tasks.filter((t) => t.status === 'done').length}
           />
-          <table className="table">
+          <table className="table table-hover align-middle">
             <thead><tr><th>Задача</th><th>Виконавець</th><th>Термін</th><th>Статус</th></tr></thead>
             <tbody>
               {report.tasks.map((t) => (

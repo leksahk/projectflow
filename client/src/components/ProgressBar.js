@@ -2,7 +2,7 @@ export default function ProgressBar({ todo = 0, doing = 0, done = 0 }) {
   const total = todo + doing + done;
   const pct = total ? Math.round((done / total) * 100) : 0;
   return (
-    <div className="progress" title={`Готово ${done} з ${total}`}>
+    <div className="pbar" title={`Готово ${done} з ${total}`}>
       <div className="progress-track">
         {total > 0 && (
           <>

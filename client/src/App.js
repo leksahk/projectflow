@@ -32,7 +32,7 @@ export default function App() {
           </nav>
           <div className="side-user">
             <span>{user.email}</span>
-            <button className="btn-link" onClick={() => signOut(auth)}>Вийти</button>
+            <button className="btn btn-link btn-sm p-0" onClick={() => signOut(auth)}>Вийти</button>
           </div>
         </aside>
         <main className="main">
