@@ -59,7 +59,7 @@ export default function Projects() {
       </div>
       {error && <p className="alert alert-danger py-2 mb-0">{error}</p>}
       {visible.length === 0 && <p className="muted">Проєктів не знайдено. Створіть перший кнопкою «Новий проєкт».</p>}
-      <div className="item row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+      <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
         {visible.map((p) => (
           <div className="col" key={p.id}>
             <ProjectCard project={p} onDelete={setToDelete} onEdit={setForm} />
@@ -76,7 +76,7 @@ export default function Projects() {
         <Modal title="Видалити проєкт?" onClose={() => setToDelete(null)}>
           <p>«{toDelete.title}» і всі його задачі буде видалено назавжди.</p>
           <div className="actions">
-            <button className="btn btn-outline-secondary" onClick={() => setToDelete(null)}>Скасувати</button>
+            <button className="btn btn-outline-primary" onClick={() => setToDelete(null)}>Скасувати</button>
             <button className="btn btn-danger" onClick={remove}>Видалити проєкт</button>
           </div>
         </Modal>

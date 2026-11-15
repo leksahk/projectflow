@@ -13,14 +13,14 @@ export default function Dashboard() {
 
   const tiles = [
     ['Проєктів', s.projects], ['У роботі', s.active], ['Задач виконано', `${s.tasks.done}/${s.tasks.total}`],
-    ['Простерміновано', s.overdue],
+    ['Протерміновано', s.overdue],
   ];
   return (
     <>
       <h1>Дашборд</h1>
       <div className="tiles">
         {tiles.map(([label, value]) => (
-          <div key={label} className={'tile' + (label === 'Простерміновано' && value > 0 ? ' tile-alert' : '')}>
+          <div key={label} className={'tile' + (label === 'Протерміновано' && value > 0 ? ' tile-alert' : '')}>
             <b>{value}</b><span>{label}</span>
           </div>
         ))}

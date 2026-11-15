@@ -63,7 +63,7 @@ export default function Team() {
             )}
             <label>Проєкт<select className="form-select" value={form.projectId} onChange={set('projectId')}>{projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}</select></label>
             <div className="actions">
-              <button type="button" className="btn btn-outline-secondary" onClick={() => setForm(null)}>Скасувати</button>
+              <button type="button" className="btn btn-outline-primary" onClick={() => setForm(null)}>Скасувати</button>
               <button className="btn btn-primary" type="submit">{form.id ? 'Зберегти зміни' : 'Додати учасника'}</button>
             </div>
           </form>

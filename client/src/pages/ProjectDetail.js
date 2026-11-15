@@ -47,7 +47,7 @@ export default function ProjectDetail() {
       <div className="page-head">
         <h1>{project.title}</h1>
         <div className="head-actions">
-          <button className="btn btn-outline-secondary" onClick={() => setEditing(true)}>Редагувати проєкт</button>
+          <button className="btn btn-outline-primary" onClick={() => setEditing(true)}>Редагувати проєкт</button>
           <select className="form-select status-select" value={project.status} onChange={changeStatus} aria-label="Статус проєкту">
           {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>

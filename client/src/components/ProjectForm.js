@@ -15,7 +15,7 @@ export default function ProjectForm({ initial, onSubmit, onCancel }) {
       </label>
       <label>Дедлайн<input className="form-control" type="date" value={v.deadline || ''} onChange={set('deadline')} /></label>
       <div className="actions">
-        <button type="button" className="btn btn-outline-secondary" onClick={onCancel}>Скасувати</button>
+        <button type="button" className="btn btn-outline-primary" onClick={onCancel}>Скасувати</button>
         <button className="btn btn-primary" type="submit">{v.id ? 'Зберегти зміни' : 'Створити проєкт'}</button>
       </div>
     </form>

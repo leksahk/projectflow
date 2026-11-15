@@ -12,7 +12,7 @@ export default function TaskForm({ initial, members = [], onSubmit, onCancel }) 
       </label>
       <label>Термін<input className="form-control" type="date" value={v.deadline || ''} onChange={set('deadline')} /></label>
       <div className="actions">
-        <button type="button" className="btn btn-outline-secondary" onClick={onCancel}>Скасувати</button>
+        <button type="button" className="btn btn-outline-primary" onClick={onCancel}>Скасувати</button>
         <button className="btn btn-primary" type="submit">{v.id ? 'Зберегти зміни' : 'Додати задачу'}</button>
       </div>
     </form>

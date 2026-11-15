@@ -42,7 +42,7 @@ export default function Analytics() {
 
       <h2>Індекс ризику проєктів</h2>
       <p className="muted small">
-        R = 100 · ({w.overdue}·O + {w.unfinished}·U + {w.time}·T), де O — частка простермінованих задач, U — частка
+        R = 100 · ({w.overdue}·O + {w.unfinished}·U + {w.time}·T), де O — частка протермінованих задач, U — частка
         незавершених, T — часовий тиск дедлайну. До 30 — низький ризик, від 60 — високий.
       </p>
       {data.projects.length === 0 && <p className="muted">Створіть проєкт, щоб побачити аналітику.</p>}
@@ -54,7 +54,7 @@ export default function Analytics() {
             <span className={`badge risk-${p.level}`}>Ризик {p.risk}: {LEVEL[p.level]}</span>
             <span className="due">
               {p.deadline ? (p.daysLeft < 0 ? `минуло ${-p.daysLeft} дн.` : `${p.daysLeft} дн. до дедлайну`) : 'без дедлайну'}
-              {p.overdue > 0 && ` · простерміновано задач: ${p.overdue}`}
+              {p.overdue > 0 && ` · протерміновано задач: ${p.overdue}`}
             </span>
           </div>
         ))}
@@ -67,7 +67,7 @@ export default function Analytics() {
             <strong>{x.name}</strong>
             <div className="load-bar"><i style={{ width: (x.open / maxOpen) * 100 + '%' }} /></div>
             <span>відкрито: <b>{x.open}</b></span>
-            <span className={x.overdue ? 'overdue' : 'due'}>простерміновано: {x.overdue}</span>
+            <span className={x.overdue ? 'overdue' : 'due'}>протерміновано: {x.overdue}</span>
             <span className="due">виконано: {x.done}</span>
           </div>
         ))}
@@ -79,7 +79,7 @@ export default function Analytics() {
           <select className="form-select" value={sel} onChange={(e) => setSel(e.target.value)} aria-label="Проєкт для звіту">
             {data.projects.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
           </select>
-          <button className="btn btn-outline-secondary" onClick={() => window.print()} disabled={!report}>Друкувати</button>
+          <button className="btn btn-outline-primary" onClick={() => window.print()} disabled={!report}>Друкувати</button>
           <button className="btn btn-primary" onClick={() => exportCsv(report.project, report.tasks)} disabled={!report}>Завантажити CSV</button>
         </div>
       </div>
