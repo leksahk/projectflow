@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { HashRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase';
+import { currentTheme, toggleTheme } from './theme';
 import AuthPanel from './pages/AuthPanel';
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
@@ -12,6 +13,7 @@ import Analytics from './pages/Analytics';
 import './styles.css';
 
 export default function App() {
+  const [theme, setTheme] = useState(currentTheme());
   const [user, setUser] = useState(undefined); // undefined = ще перевіряємо сесію
   useEffect(() => onAuthStateChanged(auth, setUser), []);
 
@@ -31,6 +33,9 @@ export default function App() {
             <NavLink to="/profile">Профіль</NavLink>
           </nav>
           <div className="side-user">
+            <button className="btn btn-outline-primary btn-sm theme-btn" onClick={() => setTheme(toggleTheme())}>
+              {theme === 'dark' ? 'Світла тема' : 'Темна тема'}
+            </button>
             <span>{user.email}</span>
             <button className="btn btn-link btn-sm p-0" onClick={() => signOut(auth)}>Вийти</button>
           </div>
